@@ -1,66 +1,66 @@
-import { FC, useEffect, useState, Suspense, use, useMemo, useRef, ReactNode, Children, useReducer, useCallback } from 'react'
+import { FC, useContext, useEffect, useRef, useState } from "react";
+import { CallElement, CallFunction, Return, IfElse } from "./program";
 
-declare module 'react' {
-  export function use<T>(x: Promise<T>): T | undefined;
-}
-
-const PickChild: FC<{ n: number; children: ReactNode }> = ({ n, children }) =>
-  Children.toArray(children)[n];
-
-const IfElse: FC<{ condition: boolean; children: [ReactNode, ReactNode] }> = ({ condition, children }) =>
-  <PickChild n={+!condition}>{children}</PickChild>;
-
-const CallFunction: FC<{ fn: () => void }> = ({ fn }) => {
-  const fnRef = useRef(fn);
-  fnRef.current = fn;
-  useEffect(() => fnRef.current(), []);
-  return null;
-}
-
-const Factorial: FC<any> = ({ n, resolve }) => {
-  const [count, setCount] = useState(n)
-  const [result, setResult] = useState(1)
+const Factorial: FC<any> = ({ n }) => {
+  const onReturn = useContext(Return);
+  const [count, setCount] = useState(n);
+  const [result, setResult] = useState(1);
 
   useEffect(() => {
-    setCount(count - 1)
-    setResult(result => count * result)
-  }, [count, resolve, result])
+    setCount(count - 1);
+    setResult((result) => count * result);
+  }, [count]);
 
   return (
     <>
       Calculating factorial of {n}...
-      <IfElse condition={count > 1}>
-        <CallFunction fn={() => resolve(result)} />
+      <IfElse condition={count <= 1}>
+        <CallFunction fn={() => onReturn(result)} />
         <></>
       </IfElse>
     </>
-  )
-}
+  );
+};
 
-const ShowResult: FC<{ promise: Promise<any> }> = ({ promise }) => {
-  const result = use(promise);
-  return <>Result: {result}</>
-}
+const Fibonacci: FC<any> = ({ n }) => {
+  const onReturn = useContext(Return);
+  const [count, setCount] = useState(n);
+  const prevResult = useRef(0);
+  const [result, setResult] = useState(1);
 
-const App: FC = () => {
-  const [_, forceUpdate] = useReducer((n) => n + 1, 0)
-  const resolve = useRef((_: any) => {});
-  const promise = useMemo(() => {
-    return new Promise((res) => {
-      resolve.current = res
-    })
-  }, [])
-
-  const onReturn = useCallback((n: number) => {
-    resolve.current(n)
-    forceUpdate()
-  }, [])
+  useEffect(() => {
+    setCount(count - 1);
+    const prev = prevResult.current;
+    prevResult.current = result;
+    setResult((result) => result + prev);
+  }, [count, result]);
 
   return (
-    <Suspense fallback={<Factorial n={5} resolve={onReturn} />}>
-      <ShowResult promise={promise} />
-    </Suspense>
-  )
-}
+    <>
+      Calculating fibonacci number {n}...
+      <IfElse condition={count <= 1}>
+        <CallFunction fn={() => onReturn(result)} />
+        <></>
+      </IfElse>
+    </>
+  );
+};
 
-export default App
+const App: FC = () => {
+  return (
+    <>
+      <div>
+        <CallElement fn={<Factorial n={10} />}>
+          {(result) => <>Facto: {result}</>}
+        </CallElement>
+      </div>
+      <div>
+        <CallElement fn={<Fibonacci n={8} />}>
+          {(result) => <>Fibo: {result}</>}
+        </CallElement>
+      </div>
+    </>
+  );
+};
+
+export default App;
