@@ -11,11 +11,13 @@
   },
   "dependencies": {
     "react": "canary",
-    "react-dom": "canary"
+    "react-dom": "canary",
+    "react-test-renderer": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
+    "@types/react-test-renderer": "^18.0.7",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "@vitejs/plugin-react": "^4.2.1",

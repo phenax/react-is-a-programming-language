@@ -30,11 +30,9 @@ export const CallElement: FC<{
 }> = ({ fn, children }) => {
   const [_, forceUpdate] = useReducer((n) => n + 1, 0)
   const resolve = useRef((_: any) => {});
-  const promise = useMemo(() => {
-    return new Promise((res) => {
-      resolve.current = res
-    })
-  }, [])
+  const promise = useMemo(() => new Promise((res) => {
+    resolve.current = res
+  }), [])
 
   const onReturn = useCallback((n: number) => {
     resolve.current(n)
