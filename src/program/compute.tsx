@@ -28,7 +28,7 @@ export const CallElement: FC<{
   fn: ReactNode,
   children: (result: any) => ReactNode,
 }> = ({ fn, children }) => {
-  const [_, forceUpdate] = useReducer((n) => n + 1, 0)
+  const [_, forceUpdate] = useReducer((n) => !n, false)
   const resolve = useRef((_: any) => {});
   const promise = useMemo(() => new Promise((res) => {
     resolve.current = res
@@ -53,7 +53,7 @@ export const EvaluateAll: FC<{ fns: ReactNode[] }> = ({ fns }) => {
 
   const resolve = useCallback((result: any, i: number) => {
     resultList.current[i] = result;
-    resultCount.current += 1;
+    resultCount.current++;
     if (resultCount.current === fns.length) {
       onReturn(resultList.current);
     }
