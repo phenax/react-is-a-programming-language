@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "canary",
     "react-dom": "canary",
-    "react-test-renderer": "^18.2.0"
+    "react-test-renderer": "canary"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",
