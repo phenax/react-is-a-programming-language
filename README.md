@@ -7,7 +7,7 @@ Our [App.tsx](./src/App.tsx) here calculates factorial of a number, fibonacci se
 - No loops
 - No if-else/`?:` ternaries/`&& ||` ternaries
 - No switch-case
-- No arithmetic operators (Currently I'm still minus for convinience but that'll change)
+- No arithmetic operators
 
 ![Screenshot](./screenshot.jpg)
 

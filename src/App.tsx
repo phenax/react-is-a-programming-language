@@ -1,25 +1,26 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { CallElement, CallFunction, IfElse, EvaluateAll } from './program/compute';
-import { Add, Multiply, N, One, numberToNode } from './program/natural-numbers';
+import React, { FC, useRef, useState } from 'react';
+import { CallElement, CallFunction, IfElse, EvaluateAll, useLoop } from './program/compute';
+import { Add, Decrement, Multiply, N, One, numberToNode } from './program/natural-numbers';
 
 const Factorial: FC<any> = React.memo(({ n }) => {
   const [count, setCount] = useState(n);
   const [result, setResult] = useState(<One />);
 
-  useEffect(() => {
-    if ((window as any).PLEASE_STOP) return;
-    // TODO: Subtraction in react
-    // TODO: Fix timeout
-    setTimeout(() => setCount(count - 1), 50)
-  }, [count]);
+  useLoop();
 
   return (
     <>
       Calculating factorial of {n}...
       <IfElse condition={count <= 1}>
         <Add>{result}</Add>
-        <CallElement key={count} fn={<Multiply a={result} b={numberToNode(count)} />}>
-          {product => <CallFunction fn={() => setResult(numberToNode(product))} />}
+        <CallElement key={count} fn={<EvaluateAll fns={[
+          <Add><Decrement>{numberToNode(count)}</Decrement></Add>,
+          <Multiply a={result} b={numberToNode(count)} />
+        ]} />}>
+          {([newCount, newResult]) => <CallFunction fn={() => {
+            setCount(newCount);
+            setResult(numberToNode(newResult))
+          }} />}
         </CallElement>
       </IfElse>
     </>
@@ -31,20 +32,21 @@ const Fibonacci: FC<any> = React.memo(({ n }) => {
   const prevResult = useRef(<></>);
   const [result, setResult] = useState(<One />);
 
-  useEffect(() => {
-    if ((window as any).PLEASE_STOP) return;
-    setTimeout(() => setCount(count - 1), 50);
-  }, [count, result]);
+  useLoop();
 
   return (
     <>
       Calculating fibonacci number {n}...
       <IfElse condition={count < 1}>
         <Add>{result}</Add>
-        <CallElement key={count} fn={<Add>{prevResult.current}{result}</Add>}>
-          {sum => <CallFunction fn={() => {
+        <CallElement key={count} fn={<EvaluateAll fns={[
+          <Add><Decrement>{numberToNode(count)}</Decrement></Add>,
+          <Add>{prevResult.current}{result}</Add>
+        ]} />}>
+          {([newCount, newResult]) => <CallFunction fn={() => {
+            setCount(newCount);
             prevResult.current = result;
-            setResult(numberToNode(sum));
+            setResult(numberToNode(newResult));
           }} />}
         </CallElement>
       </IfElse>

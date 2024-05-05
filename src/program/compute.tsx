@@ -1,4 +1,5 @@
 import React, { FC, useEffect, Suspense, use, useMemo, useRef, ReactNode, Children, useReducer, useCallback, useContext } from 'react'
+import { flushSync } from 'react-dom';
 
 declare module 'react' {
   export function use<T>(x: Promise<T>): T | undefined;
@@ -70,3 +71,11 @@ export const EvaluateAll: FC<{ fns: ReactNode[] }> = ({ fns }) => {
   )
 }
 
+export const useLoop = () => {
+  const [state, update] = useReducer((s) => !s, false);
+
+  useEffect(() => {
+    if ((window as any).PLEASE_STOP) return;
+    setTimeout(() => flushSync(() => update()), 50);
+  }, [state]);
+}

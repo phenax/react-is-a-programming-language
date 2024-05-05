@@ -36,3 +36,12 @@ export const Multiply: FC<{ a: ReactNode, b: ReactNode }> = ({ a, b }) => {
     ))}</Add>}
   </CallElement>
 };
+
+export const Decrement: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const ref = useRef<HTMLDivElement>();
+  useEffect(() => {
+    const one = ref.current?.querySelector('[data-type="nat"]') as HTMLDivElement | null;
+    if (one?.dataset) one.dataset.type = '';
+  }, []);
+  return <div ref={ref as any}>{children}</div>
+}
