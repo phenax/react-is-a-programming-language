@@ -1,4 +1,4 @@
-import React, { FC, useEffect, Suspense, use, useMemo, useRef, ReactNode, Children, useReducer, useCallback } from 'react'
+import React, { FC, useEffect, Suspense, use, useMemo, useRef, ReactNode, Children, useReducer, useCallback, useContext } from 'react'
 
 declare module 'react' {
   export function use<T>(x: Promise<T>): T | undefined;
@@ -45,3 +45,28 @@ export const CallElement: FC<{
     </Suspense>
   )
 }
+
+export const EvaluateAll: FC<{ fns: ReactNode[] }> = ({ fns }) => {
+  const onReturn = useContext(Return);
+  const resultList = useRef<any[]>([]);
+  const resultCount = useRef(0);
+
+  const resolve = useCallback((result: any, i: number) => {
+    resultList.current[i] = result;
+    resultCount.current += 1;
+    if (resultCount.current === fns.length) {
+      onReturn(resultList.current);
+    }
+  }, [fns.length, onReturn])
+
+  return (
+    <>
+      {fns.map((fn, i) => (
+        <CallElement key={i} fn={fn}>
+          {result => <CallFunction fn={() => resolve(result, i)} />}
+        </CallElement>
+      ))}
+    </>
+  )
+}
+

@@ -1,14 +1,15 @@
-import React, { FC, ReactNode, useContext, useEffect } from "react";
-import { Return } from "./compute";
-import TestRenderer from 'react-test-renderer'
+import { FC, Fragment, ReactNode, useContext, useEffect, useRef } from 'react';
+import { CallElement, Return } from './compute';
 
-export const One: FC = () => <div data-type="nat" />;
-export const Two: FC = () => <><One /><One /></>;
+export const One = () => <div data-type="nat" />;
 
-export const nodeToNumber = (node: ReactNode) => {
-  const renderer = TestRenderer.create(<>{node}</>);
-  const ones = renderer.root?.findAllByType(One);
-  return ones.length ?? 0;
+export const N = {
+  _0: () => <></>,
+  _1: () => <One />,
+  _2: () => <><One /><One /></>,
+  _3: () => <><One /><One /><One /></>,
+  _4: () => <><One /><One /><One /><One /></>,
+  _5: () => <><One /><One /><One /><One /><One /></>,
 }
 
 export const numberToNode = (n: number) => {
@@ -16,20 +17,22 @@ export const numberToNode = (n: number) => {
   return <>{ones}</>;
 }
 
-export const multiplyNodes = (a: ReactNode, b: ReactNode) => {
-  const renderer = TestRenderer.create(<>{b}</>);
-  return renderer.root?.findAllByType(One).map(_ => React.cloneElement(a as any));
-}
-
 export const Add: FC<{ children?: ReactNode }> = ({ children }) => {
   const onReturn = useContext(Return);
+  const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    onReturn(nodeToNumber(children));
+    const count = Array.from(ref.current?.querySelectorAll('[data-type="nat"]') ?? []).length;
+    onReturn(count);
   }, [children, onReturn]);
 
-  return null;
+  return <div ref={ref as any}>{children}</div>;
 }
 
-export const Multiply: FC<{ a: ReactNode, b: ReactNode }> = ({ a, b }) =>
-  <Add>{multiplyNodes(a, b)}</Add>;
+export const Multiply: FC<{ a: ReactNode, b: ReactNode }> = ({ a, b }) => {
+  return <CallElement fn={<Add>{a}</Add>}>
+    {aNum => <Add>{Array.from({ length: aNum }, (_, i) => (
+      <Fragment key={i}>{b}</Fragment>
+    ))}</Add>}
+  </CallElement>
+};
