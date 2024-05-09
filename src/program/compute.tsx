@@ -5,11 +5,20 @@ declare module 'react' {
   export function use<T>(x: Promise<T>): T | undefined;
 }
 
+export const useLoop = () => {
+  const [state, update] = useReducer((s) => !s, false);
+
+  useEffect(() => {
+    if ((window as any).PLEASE_STOP) return; // Emergency stop looping
+    setTimeout(() => flushSync(() => update()), 50);
+  }, [state]);
+}
+
 export const PickChild: FC<{ n: number; children: ReactNode }> = ({ n, children }) =>
   Children.toArray(children)[n];
 
 export const IfElse: FC<{ condition: boolean; children: [ReactNode, ReactNode] }> = ({ condition, children }) =>
-  <PickChild n={+!condition}>{children}</PickChild>;
+  <PickChild n={Number(!condition)}>{children}</PickChild>;
 
 export const CallFunction: FC<{ fn: () => void }> = ({ fn }) => {
   const fnRef = useRef(fn);
@@ -50,12 +59,11 @@ export const CallElement: FC<{
 export const EvaluateAll: FC<{ fns: ReactNode[] }> = ({ fns }) => {
   const onReturn = useContext(Return);
   const resultList = useRef<any[]>([]);
-  const resultCount = useRef(0);
 
   const resolve = useCallback((result: any, i: number) => {
     resultList.current[i] = result;
-    resultCount.current++;
-    if (resultCount.current === fns.length) {
+    const resultCount = resultList.current.filter(_ => true).length;
+    if (resultCount === fns.length) {
       onReturn(resultList.current);
     }
   }, [fns.length, onReturn])
@@ -71,11 +79,3 @@ export const EvaluateAll: FC<{ fns: ReactNode[] }> = ({ fns }) => {
   )
 }
 
-export const useLoop = () => {
-  const [state, update] = useReducer((s) => !s, false);
-
-  useEffect(() => {
-    if ((window as any).PLEASE_STOP) return;
-    setTimeout(() => flushSync(() => update()), 50);
-  }, [state]);
-}

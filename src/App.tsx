@@ -13,10 +13,12 @@ const Factorial: FC<any> = React.memo(({ n }) => {
       Calculating factorial of {n}...
       <IfElse condition={count <= 1}>
         <Add>{result}</Add>
-        <CallElement key={count} fn={<EvaluateAll fns={[
-          <Add><Decrement>{numberToNode(count)}</Decrement></Add>,
-          <Multiply a={result} b={numberToNode(count)} />
-        ]} />}>
+        <CallElement key={count} fn={
+          <EvaluateAll fns={[
+            <Add><Decrement>{numberToNode(count)}</Decrement></Add>,
+            <Multiply a={result} b={numberToNode(count)} />
+          ]} />
+        }>
           {([newCount, newResult]) => <CallFunction fn={() => {
             setCount(newCount);
             setResult(numberToNode(newResult))
