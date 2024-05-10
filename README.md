@@ -96,6 +96,8 @@ So, the number of the `nat` dom nodes is what represents our number.
 
 Note: `Add` component also doubles as a natural number node to number converter.
 
+> Sort of cheating here by using dom nodes so anyone knows of a way to do arithmetics without the dom, please let me know!
+
 #### EvaluateAll
 Just `CallElement` for each react element in the array. Essentially `Promise.all` for react elements.
 
