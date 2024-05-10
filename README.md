@@ -9,6 +9,8 @@ Our [App.tsx](./src/App.tsx) here calculates factorial of a number, fibonacci se
 - No switch-case
 - No arithmetic operators
 
+**So every bit of computation in this repo (as much as possible) is done using react only.**
+
 ![Screenshot](./screenshot.jpg)
 
 
